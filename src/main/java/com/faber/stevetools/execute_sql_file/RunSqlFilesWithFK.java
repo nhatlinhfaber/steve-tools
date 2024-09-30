@@ -39,17 +39,19 @@ public class RunSqlFilesWithFK {
             String sql = new String(Files.readAllBytes(sqlFile));
             // Split SQL content by semicolon (;) to handle multiple statements
             String[] sqlStatements = sql.split(";");
-
-            try (Statement stmt = connection.createStatement()) {
-                for (String statement : sqlStatements) {
+            for (String statement : sqlStatements) {
+                try (Statement stmt = connection.createStatement()) {
                     statement = statement.trim();
                     if (!statement.isEmpty()) {  // Ignore empty statements
                         stmt.execute(statement);
                         System.out.println("Executed: " + statement);
                     }
+                }catch (Exception e) {
+                    System.err.println("Failed to execute query: " + statement);
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.err.println("Failed to execute file: " + sqlFile.getFileName());
             e.printStackTrace();
         }
